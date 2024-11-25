@@ -90,12 +90,13 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
-                # 三角関数のボタン行
+                # 三角関数と指数計算のボタン行
                 ft.Row(
                     controls=[
                         ExtraActionButton(text="sin", button_clicked=self.button_clicked),
                         ExtraActionButton(text="cos", button_clicked=self.button_clicked),
                         ExtraActionButton(text="tan", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="^", button_clicked=self.button_clicked),  # x^y ボタン
                     ]
                 ),
             ]
@@ -119,6 +120,11 @@ class CalculatorApp(ft.Container):
             elif data in ("+", "-", "*", "/"):
                 self.operand1 = float(self.result.value)
                 self.operator = data
+                self.new_operand = True
+
+            elif data == "^":  # x^y 演算子
+                self.operand1 = float(self.result.value)
+                self.operator = "^"
                 self.new_operand = True
 
             elif data == "=":
@@ -158,6 +164,8 @@ class CalculatorApp(ft.Container):
                 if operand2 == 0:
                     return "Error"
                 return operand1 / operand2
+            elif operator == "^":  # x^y の計算
+                return math.pow(operand1, operand2)
         except:
             return "Error"
 
@@ -168,7 +176,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calculator with Trigonometry"
+    page.title = "Calculator with Power Function"
     calc = CalculatorApp()
     page.add(calc)
 
