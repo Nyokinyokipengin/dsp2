@@ -28,8 +28,8 @@ class ActionButton(CalcButton):
 class ExtraActionButton(CalcButton):
     def __init__(self, text, button_clicked):
         CalcButton.__init__(self, text, button_clicked)
-        self.bgcolor = ft.colors.BLUE_GREY_100
-        self.color = ft.colors.BLACK
+        self.bgcolor = ft.colors.GREY
+        self.color = ft.colors.WHITE
 
 
 class CalculatorApp(ft.Container):
@@ -97,9 +97,10 @@ class CalculatorApp(ft.Container):
                         ExtraActionButton(text="ln", button_clicked=self.button_clicked),
                         ExtraActionButton(text="sin", button_clicked=self.button_clicked),
                         ExtraActionButton(text="cos", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="tan", button_clicked=self.button_clicked),  # 正接
                         ExtraActionButton(text="^", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="√", button_clicked=self.button_clicked),  # 平方根ボタン
-                        ExtraActionButton(text="n!", button_clicked=self.button_clicked),  # 階乗ボタン
+                        ExtraActionButton(text="√", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="n!", button_clicked=self.button_clicked),
                     ]
                 ),
             ]
@@ -150,8 +151,12 @@ class CalculatorApp(ft.Container):
 
             elif data == "sin":
                 self.result.value = math.sin(math.radians(float(self.result.value)))
+
             elif data == "cos":
                 self.result.value = math.cos(math.radians(float(self.result.value)))
+
+            elif data == "tan":  # 正接
+                self.result.value = math.tan(math.radians(float(self.result.value)))
 
             elif data == "√":  # 平方根
                 if float(self.result.value) >= 0:
@@ -201,7 +206,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calculator with Factorial"
+    page.title = "Scientific Calculator"
     calc = CalculatorApp()
     page.add(calc)
 
