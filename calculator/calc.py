@@ -90,13 +90,14 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
-                # 三角関数と指数計算のボタン行
+                # 特殊関数（対数、三角関数、指数計算）ボタン
                 ft.Row(
                     controls=[
+                        ExtraActionButton(text="log10", button_clicked=self.button_clicked),  # 常用対数
+                        ExtraActionButton(text="ln", button_clicked=self.button_clicked),  # 自然対数
                         ExtraActionButton(text="sin", button_clicked=self.button_clicked),
                         ExtraActionButton(text="cos", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="tan", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="^", button_clicked=self.button_clicked),  # x^y ボタン
+                        ExtraActionButton(text="^", button_clicked=self.button_clicked),  # x^y
                     ]
                 ),
             ]
@@ -133,12 +134,22 @@ class CalculatorApp(ft.Container):
                 )
                 self.reset()
 
+            elif data == "log10":  # 常用対数
+                if float(self.result.value) > 0:
+                    self.result.value = math.log10(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
+            elif data == "ln":  # 自然対数
+                if float(self.result.value) > 0:
+                    self.result.value = math.log(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
             elif data == "sin":
                 self.result.value = math.sin(math.radians(float(self.result.value)))
             elif data == "cos":
                 self.result.value = math.cos(math.radians(float(self.result.value)))
-            elif data == "tan":
-                self.result.value = math.tan(math.radians(float(self.result.value)))
 
             elif data == "%":
                 self.result.value = float(self.result.value) / 100
@@ -176,7 +187,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calculator with Power Function"
+    page.title = "Calculator with Logarithms"
     calc = CalculatorApp()
     page.add(calc)
 
