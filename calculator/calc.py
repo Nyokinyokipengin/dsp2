@@ -90,14 +90,15 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
-                # 特殊関数（対数、三角関数、指数計算）ボタン
+                # 特殊関数ボタンを配置
                 ft.Row(
                     controls=[
-                        ExtraActionButton(text="log10", button_clicked=self.button_clicked),  # 常用対数
-                        ExtraActionButton(text="ln", button_clicked=self.button_clicked),  # 自然対数
+                        ExtraActionButton(text="log10", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="ln", button_clicked=self.button_clicked),
                         ExtraActionButton(text="sin", button_clicked=self.button_clicked),
                         ExtraActionButton(text="cos", button_clicked=self.button_clicked),
-                        ExtraActionButton(text="^", button_clicked=self.button_clicked),  # x^y
+                        ExtraActionButton(text="^", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="√", button_clicked=self.button_clicked),  # 平方根ボタン
                     ]
                 ),
             ]
@@ -151,6 +152,12 @@ class CalculatorApp(ft.Container):
             elif data == "cos":
                 self.result.value = math.cos(math.radians(float(self.result.value)))
 
+            elif data == "√":  # 平方根
+                if float(self.result.value) >= 0:
+                    self.result.value = math.sqrt(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
             elif data == "%":
                 self.result.value = float(self.result.value) / 100
 
@@ -187,7 +194,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calculator with Logarithms"
+    page.title = "Calculator with Square Root"
     calc = CalculatorApp()
     page.add(calc)
 
