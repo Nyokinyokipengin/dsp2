@@ -99,6 +99,7 @@ class CalculatorApp(ft.Container):
                         ExtraActionButton(text="cos", button_clicked=self.button_clicked),
                         ExtraActionButton(text="^", button_clicked=self.button_clicked),
                         ExtraActionButton(text="√", button_clicked=self.button_clicked),  # 平方根ボタン
+                        ExtraActionButton(text="n!", button_clicked=self.button_clicked),  # 階乗ボタン
                     ]
                 ),
             ]
@@ -158,6 +159,12 @@ class CalculatorApp(ft.Container):
                 else:
                     self.result.value = "Error"
 
+            elif data == "n!":  # 階乗
+                if float(self.result.value).is_integer() and float(self.result.value) >= 0:
+                    self.result.value = math.factorial(int(float(self.result.value)))
+                else:
+                    self.result.value = "Error"
+
             elif data == "%":
                 self.result.value = float(self.result.value) / 100
 
@@ -194,7 +201,7 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calculator with Square Root"
+    page.title = "Calculator with Factorial"
     calc = CalculatorApp()
     page.add(calc)
 
