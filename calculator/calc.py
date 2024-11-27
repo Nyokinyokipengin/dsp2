@@ -1,4 +1,5 @@
 import flet as ft
+import math  # 数学関数を利用するためにインポート
 
 
 class CalcButton(ft.ElevatedButton):
@@ -27,12 +28,11 @@ class ActionButton(CalcButton):
 class ExtraActionButton(CalcButton):
     def __init__(self, text, button_clicked):
         CalcButton.__init__(self, text, button_clicked)
-        self.bgcolor = ft.colors.BLUE_GREY_100
-        self.color = ft.colors.BLACK
+        self.bgcolor = ft.colors.GREY
+        self.color = ft.colors.WHITE
 
 
 class CalculatorApp(ft.Container):
-    # application's root control (i.e. "view") containing all other controls
     def __init__(self):
         super().__init__()
         self.reset()
@@ -90,77 +90,114 @@ class CalculatorApp(ft.Container):
                         ActionButton(text="=", button_clicked=self.button_clicked),
                     ]
                 ),
+                # 特殊関数ボタンを配置
+                ft.Row(
+                    controls=[
+                        ExtraActionButton(text="log10", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="ln", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="sin", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="cos", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="tan", button_clicked=self.button_clicked),  # 正接
+                        ExtraActionButton(text="^", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="√", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="n!", button_clicked=self.button_clicked),
+                    ]
+                ),
             ]
         )
 
     def button_clicked(self, e):
         data = e.control.data
         print(f"Button clicked with data = {data}")
-        if self.result.value == "Error" or data == "AC":
-            self.result.value = "0"
-            self.reset()
+        try:
+            if self.result.value == "Error" or data == "AC":
+                self.result.value = "0"
+                self.reset()
 
-        elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
-            if self.result.value == "0" or self.new_operand == True:
-                self.result.value = data
-                self.new_operand = False
-            else:
-                self.result.value = self.result.value + data
+            elif data in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."):
+                if self.result.value == "0" or self.new_operand:
+                    self.result.value = data
+                    self.new_operand = False
+                else:
+                    self.result.value += data
 
-        elif data in ("+", "-", "*", "/"):
-            self.result.value = self.calculate(
-                self.operand1, float(self.result.value), self.operator
-            )
-            self.operator = data
-            if self.result.value == "Error":
-                self.operand1 = "0"
-            else:
+            elif data in ("+", "-", "*", "/"):
                 self.operand1 = float(self.result.value)
-            self.new_operand = True
+                self.operator = data
+                self.new_operand = True
 
-        elif data in ("="):
-            self.result.value = self.calculate(
-                self.operand1, float(self.result.value), self.operator
-            )
-            self.reset()
+            elif data == "^":  # x^y 演算子
+                self.operand1 = float(self.result.value)
+                self.operator = "^"
+                self.new_operand = True
 
-        elif data in ("%"):
-            self.result.value = float(self.result.value) / 100
-            self.reset()
-
-        elif data in ("+/-"):
-            if float(self.result.value) > 0:
-                self.result.value = "-" + str(self.result.value)
-
-            elif float(self.result.value) < 0:
-                self.result.value = str(
-                    self.format_number(abs(float(self.result.value)))
+            elif data == "=":
+                self.result.value = self.calculate(
+                    self.operand1, float(self.result.value), self.operator
                 )
+                self.reset()
+
+            elif data == "log10":  # 常用対数
+                if float(self.result.value) > 0:
+                    self.result.value = math.log10(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
+            elif data == "ln":  # 自然対数
+                if float(self.result.value) > 0:
+                    self.result.value = math.log(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
+            elif data == "sin":
+                self.result.value = math.sin(math.radians(float(self.result.value)))
+
+            elif data == "cos":
+                self.result.value = math.cos(math.radians(float(self.result.value)))
+
+            elif data == "tan":  # 正接
+                self.result.value = math.tan(math.radians(float(self.result.value)))
+
+            elif data == "√":  # 平方根
+                if float(self.result.value) >= 0:
+                    self.result.value = math.sqrt(float(self.result.value))
+                else:
+                    self.result.value = "Error"
+
+            elif data == "n!":  # 階乗
+                if float(self.result.value).is_integer() and float(self.result.value) >= 0:
+                    self.result.value = math.factorial(int(float(self.result.value)))
+                else:
+                    self.result.value = "Error"
+
+            elif data == "%":
+                self.result.value = float(self.result.value) / 100
+
+            elif data == "+/-":
+                self.result.value = str(-float(self.result.value))
+
+        except Exception as ex:
+            print(f"Error: {ex}")
+            self.result.value = "Error"
 
         self.update()
 
-    def format_number(self, num):
-        if num % 1 == 0:
-            return int(num)
-        else:
-            return num
-
     def calculate(self, operand1, operand2, operator):
-
-        if operator == "+":
-            return self.format_number(operand1 + operand2)
-
-        elif operator == "-":
-            return self.format_number(operand1 - operand2)
-
-        elif operator == "*":
-            return self.format_number(operand1 * operand2)
-
-        elif operator == "/":
-            if operand2 == 0:
-                return "Error"
-            else:
-                return self.format_number(operand1 / operand2)
+        try:
+            if operator == "+":
+                return operand1 + operand2
+            elif operator == "-":
+                return operand1 - operand2
+            elif operator == "*":
+                return operand1 * operand2
+            elif operator == "/":
+                if operand2 == 0:
+                    return "Error"
+                return operand1 / operand2
+            elif operator == "^":  # x^y の計算
+                return math.pow(operand1, operand2)
+        except:
+            return "Error"
 
     def reset(self):
         self.operator = "+"
@@ -169,11 +206,8 @@ class CalculatorApp(ft.Container):
 
 
 def main(page: ft.Page):
-    page.title = "Calc App"
-    # create application instance
+    page.title = "Scientific Calculator"
     calc = CalculatorApp()
-
-    # add application's root control to the page
     page.add(calc)
 
 
